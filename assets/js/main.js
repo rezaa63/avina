@@ -4,6 +4,7 @@
   const SITE_CONFIG = Object.freeze({
     phone: "09211237543",
     designer: "rezaakbari",
+    orderApiEndpoint: "https://fastweb96-m2vkzxu7.manus.space/api/order",
     // Replace each homepage URL with the real profile URL before publishing.
     socials: [
       {
@@ -305,11 +306,59 @@
   const form = document.getElementById("order-form");
   const feedback = document.getElementById("form-feedback");
   if (form && feedback) {
-    form.addEventListener("submit", (event) => {
+    const submitButton = form.querySelector('[type="submit"]');
+    const submitLabel = submitButton?.querySelector("span");
+    const originalSubmitLabel = submitLabel?.textContent || "ثبت درخواست";
+    let isSubmitting = false;
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (isSubmitting) return;
       if (!form.reportValidity()) return;
-      feedback.innerHTML = `اطلاعات فقط در این صفحه بررسی شد و ارسال یا ذخیره نشده است. برای ادامه، با شمارهٔ <a href="${phoneHref}">${SITE_CONFIG.phone}</a> تماس بگیرید.`;
+
+      if (!SITE_CONFIG.orderApiEndpoint) {
+        feedback.dataset.state = "error";
+        feedback.textContent =
+          "اتصال امن تلگرام هنوز نهایی نشده است. لطفاً از راه تماس مستقیم پیگیری کنید.";
+        feedback.classList.add("is-visible");
+        return;
+      }
+
+      isSubmitting = true;
+      if (submitButton) submitButton.disabled = true;
+      if (submitLabel) submitLabel.textContent = "در حال ارسال…";
+      form.setAttribute("aria-busy", "true");
+      feedback.dataset.state = "pending";
+      feedback.textContent = "درخواست شما در حال ارسال امن به تلگرام است…";
       feedback.classList.add("is-visible");
+
+      try {
+        const values = Object.fromEntries(new FormData(form).entries());
+        const response = await fetch(SITE_CONFIG.orderApiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+          mode: "cors",
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result.ok !== true) {
+          throw new Error("order_send_failed");
+        }
+
+        form.reset();
+        feedback.dataset.state = "success";
+        feedback.textContent =
+          "درخواست شما به تلگرام ارسال شد. به‌زودی برای گفت‌وگو با شما تماس می‌گیریم.";
+      } catch {
+        feedback.dataset.state = "error";
+        feedback.textContent =
+          "ارسال درخواست انجام نشد. لطفاً کمی بعد دوباره تلاش کنید یا با شمارهٔ 09211237543 تماس بگیرید.";
+      } finally {
+        isSubmitting = false;
+        if (submitButton) submitButton.disabled = false;
+        if (submitLabel) submitLabel.textContent = originalSubmitLabel;
+        form.removeAttribute("aria-busy");
+      }
     });
   }
 })();

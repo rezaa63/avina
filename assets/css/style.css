@@ -2668,11 +2668,22 @@ h1 {
   font-size: 9px;
   line-height: 1.8;
 }
+.form-honeypot {
+  position: absolute;
+  inset-inline-start: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
 .form-submit {
   flex: none;
   min-height: 43px;
   padding: 10px 14px;
   font-size: 10px;
+}
+.form-submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 .form-feedback {
   display: none;
@@ -2687,6 +2698,16 @@ h1 {
 }
 .form-feedback.is-visible {
   display: block;
+}
+.form-feedback[data-state="pending"] {
+  border-color: rgba(214, 179, 106, 0.25);
+  background: rgba(214, 179, 106, 0.07);
+  color: #e5d4ad;
+}
+.form-feedback[data-state="error"] {
+  border-color: rgba(255, 111, 111, 0.3);
+  background: rgba(255, 89, 89, 0.07);
+  color: #ffc2bb;
 }
 .form-feedback a {
   color: #ddc47e;

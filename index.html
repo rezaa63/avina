@@ -1007,6 +1007,17 @@
               action="#contact"
               novalidate
             >
+              <div class="form-honeypot" aria-hidden="true">
+                <label
+                  >این فیلد را خالی بگذارید
+                  <input
+                    name="website"
+                    type="text"
+                    tabindex="-1"
+                    autocomplete="off"
+                  />
+                </label>
+              </div>
               <div class="form-grid">
                 <label class="field"
                   ><span>نام <b>*</b></span
@@ -1062,8 +1073,9 @@
               </div>
               <div class="form-foot">
                 <p class="form-disclaimer">
-                  این فرم فقط در مرورگر اعتبارسنجی می‌شود و اطلاعات شما به سرور
-                  ارسال یا ذخیره نمی‌شود.
+                  با ثبت درخواست، نام و اطلاعات پروژه برای پیگیری به گفت‌وگوی
+                  تلگرام FastWeb96 ارسال می‌شود؛ این سایت آن‌ها را در
+                  پایگاه‌داده ذخیره نمی‌کند.
                 </p>
                 <button class="button button-primary form-submit" type="submit">
                   <span>ثبت درخواست</span
